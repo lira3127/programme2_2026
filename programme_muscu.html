@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programme Muscu — Avril 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --beige:       #F5EFE6;
+    --beige-dark:  #EDE3D6;
+    --beige-mid:   #E8DECE;
+    --brown-light: #C4A882;
+    --brown:       #9B7355;
+    --brown-dark:  #6B4F35;
+    --sage:        #8A9E85;
+    --sage-light:  #B5C5B0;
+    --sage-pale:   #D6E0D4;
+    --warm-white:  #FAF6F0;
+    --text:        #3D2C1E;
+    --text-muted:  #7A6455;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--beige);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--warm-white);
+    border-bottom: 2px solid var(--beige-mid);
+    padding: 2rem 1.5rem 1.5rem;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 20px rgba(107,79,53,0.07);
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    font-weight: 700;
+    color: var(--brown-dark);
+    letter-spacing: 0.02em;
+  }
+
+  header p {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 0.3rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* ── HOME: SEMAINE ── */
+  .home-view { padding: 2rem 1.2rem 4rem; max-width: 600px; margin: 0 auto; }
+
+  .week-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    color: var(--brown);
+    font-style: italic;
+    text-align: center;
+    margin-bottom: 1.6rem;
+  }
+
+  .week-grid { display: grid; gap: 0.85rem; }
+
+  .day-card {
+    background: var(--warm-white);
+    border-radius: 16px;
+    padding: 1.3rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    cursor: pointer;
+    border: 1.5px solid var(--beige-mid);
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .day-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--brown-light);
+    border-radius: 4px 0 0 4px;
+    transition: width 0.25s ease;
+  }
+
+  .day-card.sage::before { background: var(--sage); }
+  .day-card.rest::before { background: var(--beige-mid); }
+
+  .day-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(107,79,53,0.12);
+    border-color: var(--brown-light);
+  }
+
+  .day-card.sage:hover { border-color: var(--sage); }
+
+  .day-card:active { transform: translateY(0); }
+
+  .day-tag {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: var(--beige-dark);
+    color: var(--brown);
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    min-width: 70px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .day-card.sage .day-tag {
+    background: var(--sage-pale);
+    color: var(--sage);
+  }
+
+  .day-card.rest .day-tag {
+    background: var(--beige-mid);
+    color: var(--text-muted);
+  }
+
+  .day-info { flex: 1; }
+
+  .day-info strong {
+    display: block;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .day-info span {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+
+  .day-arrow {
+    color: var(--brown-light);
+    font-size: 1.1rem;
+    transition: transform 0.2s ease;
+  }
+
+  .day-card:hover .day-arrow { transform: translateX(4px); }
+  .day-card.rest .day-arrow { opacity: 0; }
+
+  /* ── SESSION VIEW ── */
+  .session-view { display: none; padding: 1.5rem 1.2rem 4rem; max-width: 600px; margin: 0 auto; }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    color: var(--brown);
+    cursor: pointer;
+    margin-bottom: 1.8rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.5rem 0;
+    border: none;
+    background: none;
+  }
+
+  .back-btn:hover { color: var(--brown-dark); }
+
+  .session-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1.5px solid var(--beige-mid);
+  }
+
+  .session-header .day-name {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--brown-light);
+    margin-bottom: 0.3rem;
+  }
+
+  .session-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--brown-dark);
+    line-height: 1.1;
+  }
+
+  .session-header .sub {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 0.3rem;
+    font-style: italic;
+  }
+
+  /* Mobilité */
+  .mobilite-block {
+    background: var(--sage-pale);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.5rem;
+    border-left: 3px solid var(--sage);
+  }
+
+  .mobilite-block .mob-title {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 0.4rem;
+  }
+
+  .mobilite-block p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* Section label */
+  .section-label {
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 1.6rem 0 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--beige-mid);
+  }
+
+  .section-label.abdos { color: var(--sage); }
+  .section-label.abdos::after { background: var(--sage-pale); }
+
+  /* Exercise card */
+  .exo-card {
+    background: var(--warm-white);
+    border-radius: 14px;
+    margin-bottom: 0.65rem;
+    border: 1.5px solid var(--beige-mid);
+    overflow: hidden;
+    transition: border-color 0.2s ease;
+  }
+
+  .exo-card.abdos-card { border-color: var(--sage-pale); }
+
+  .exo-card.open { border-color: var(--brown-light); }
+  .exo-card.abdos-card.open { border-color: var(--sage); }
+
+  .exo-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.2rem;
+    cursor: pointer;
+    user-select: none;
+    gap: 0.8rem;
+  }
+
+  .exo-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text);
+    flex: 1;
+    line-height: 1.3;
+  }
+
+  .exo-preview {
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: var(--brown-light);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .exo-card.abdos-card .exo-preview { color: var(--sage); }
+
+  .exo-chevron {
+    color: var(--brown-light);
+    font-size: 0.75rem;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  .exo-card.abdos-card .exo-chevron { color: var(--sage); }
+  .exo-card.open .exo-chevron { transform: rotate(180deg); }
+
+  /* Detail panel */
+  .exo-detail {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+  }
+
+  .exo-detail-inner {
+    padding: 0 1.2rem 1.2rem;
+    border-top: 1px solid var(--beige-mid);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.7rem;
+    padding-top: 1rem;
+  }
+
+  .exo-card.abdos-card .exo-detail-inner { border-top-color: var(--sage-pale); }
+
+  .detail-chip {
+    background: var(--beige);
+    border-radius: 10px;
+    padding: 0.65rem 0.8rem;
+  }
+
+  .detail-chip .chip-label {
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+  }
+
+  .detail-chip .chip-value {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--brown-dark);
+  }
+
+  .exo-card.abdos-card .detail-chip { background: var(--sage-pale); }
+  .exo-card.abdos-card .detail-chip .chip-value { color: var(--sage); }
+
+  .detail-notes {
+    grid-column: 1 / -1;
+    background: var(--beige-dark);
+    border-radius: 10px;
+    padding: 0.65rem 0.8rem;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .detail-notes:empty { display: none; }
+
+  /* ── ACTIVE STATE ── */
+  .exo-card.open {
+    box-shadow: 0 4px 20px rgba(107,79,53,0.1);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .day-card {
+    animation: fadeUp 0.4s ease backwards;
+  }
+
+  .exo-card {
+    animation: fadeUp 0.3s ease backwards;
+  }
+
+  /* ── FOOTER NOTE ── */
+  .footer-note {
+    margin-top: 2.5rem;
+    padding: 1.2rem 1.4rem;
+    background: var(--beige-dark);
+    border-radius: 14px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .footer-note strong { color: var(--brown); font-weight: 500; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 400px) {
+    .exo-detail-inner { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    header h1 { font-size: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Programme Musculation</h1>
+  <p>Recomposition · Avril 2026 · 3 mois</p>
+</header>
+
+<!-- HOME -->
+<div id="home" class="home-view">
+  <p class="week-label">Upper / Lower — 4 séances / semaine</p>
+
+  <div class="week-grid">
+    <div class="day-card" onclick="openSession('lundi')" style="animation-delay:0.05s">
+      <div class="day-tag">Lundi</div>
+      <div class="day-info">
+        <strong>Lower A</strong>
+        <span>Quadriceps · Fessiers</span>
+      </div>
+      <span class="day-arrow">›</span>
+    </div>
+
+    <div class="day-card" onclick="openSession('mardi')" style="animation-delay:0.1s">
+      <div class="day-tag">Mardi</div>
+      <div class="day-info">
+        <strong>Upper A</strong>
+        <span>Dos · Biceps · Épaules arrière</span>
+      </div>
+      <span class="day-arrow">›</span>
+    </div>
+
+    <div class="day-card" onclick="openSession('mercredi')" style="animation-delay:0.15s">
+      <div class="day-tag">Mercredi</div>
+      <div class="day-info">
+        <strong>Lower B</strong>
+        <span>Ischios · Fessiers</span>
+      </div>
+      <span class="day-arrow">›</span>
+    </div>
+
+    <div class="day-card sage" style="animation-delay:0.2s;cursor:default">
+      <div class="day-tag">Jeudi</div>
+      <div class="day-info">
+        <strong>Course à pied</strong>
+        <span>30 – 45 min · allure conversationnelle</span>
+      </div>
+      <span class="day-arrow">›</span>
+    </div>
+
+    <div class="day-card" onclick="openSession('vendredi')" style="animation-delay:0.25s">
+      <div class="day-tag">Vendredi</div>
+      <div class="day-info">
+        <strong>Upper B</strong>
+        <span>Pecs · Épaules · Triceps</span>
+      </div>
+      <span class="day-arrow">›</span>
+    </div>
+
+    <div class="day-card sage" style="animation-delay:0.3s;cursor:default">
+      <div class="day-tag">Samedi</div>
+      <div class="day-info">
+        <strong>Course à pied</strong>
+        <span>30 – 45 min · allure conversationnelle</span>
+      </div>
+      <span class="day-arrow">›</span>
+    </div>
+
+    <div class="day-card rest" style="animation-delay:0.35s;cursor:default">
+      <div class="day-tag">Dimanche</div>
+      <div class="day-info">
+        <strong>Repos total</strong>
+        <span>Récupération complète 🌿</span>
+      </div>
+      <span class="day-arrow">›</span>
+    </div>
+  </div>
+
+  <div class="footer-note" style="margin-top:1.8rem">
+    <strong>Durée séance</strong> 1h15 – 1h30 &nbsp;·&nbsp; <strong>Mobilité</strong> 5-10 min en début &nbsp;·&nbsp; <strong>Tempo</strong> Descente · Pause bas · Montée · Pause haut
+  </div>
+</div>
+
+<!-- SESSIONS -->
+<div id="session-lundi" class="session-view">
+  <button class="back-btn" onclick="goHome()">← Retour</button>
+  <div class="session-header">
+    <div class="day-name">Lundi</div>
+    <h2>Lower A</h2>
+    <div class="sub">Quadriceps · Fessiers</div>
+  </div>
+
+  <div class="mobilite-block">
+    <div class="mob-title">🌿 Mobilité — 5 à 10 min</div>
+    <p>Mobilité hanches (90/90) &nbsp;·&nbsp; Flexion cheville au mur &nbsp;·&nbsp; Rotations thoraciques + Autres</p>
+  </div>
+
+  <div class="section-label">Exercices principaux</div>
+
+  <!-- exos lundi -->
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header">
+      <span class="exo-name">Squat barre</span>
+      <span class="exo-preview">4 × 8</span>
+      <span class="exo-chevron">▾</span>
+    </div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">4 × 8</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">8</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 1 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">90s</div></div>
+      <div class="detail-notes">Échauffement : 20 kg × 10 — voir progression</div>
+    </div></div>
+  </div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header">
+      <span class="exo-name">Leg Press</span>
+      <span class="exo-preview">4 × 12</span>
+      <span class="exo-chevron">▾</span>
+    </div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">4 × 12</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 1 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">90s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header">
+      <span class="exo-name">Fentes latérales haltères</span>
+      <span class="exo-preview">3 × 12 / jambe</span>
+      <span class="exo-chevron">▾</span>
+    </div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 12 / jambe</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 0 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">75s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header">
+      <span class="exo-name">Leg Extension bilatérale</span>
+      <span class="exo-preview">3 × 15</span>
+      <span class="exo-chevron">▾</span>
+    </div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 15</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 0 · 2 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">60s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header">
+      <span class="exo-name">Abducteurs machine</span>
+      <span class="exo-preview">3 × 15</span>
+      <span class="exo-chevron">▾</span>
+    </div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 15</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 0 · 2 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">60s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header">
+      <span class="exo-name">Mollets</span>
+      <span class="exo-preview">3 × 20</span>
+      <span class="exo-chevron">▾</span>
+    </div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 20</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">6</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 1 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">45s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header">
+      <span class="exo-name">Anti-périostite (tibialis raises)</span>
+      <span class="exo-preview">3 × 20</span>
+      <span class="exo-chevron">▾</span>
+    </div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 20</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">—</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 1 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">45s</div></div>
+      <div class="detail-notes">Protection cheville 🦶</div>
+    </div></div>
+  </div>
+
+  <div class="section-label abdos">Abdos · Focus gainage et rotation</div>
+
+  <div class="exo-card abdos-card" onclick="toggleExo(this)">
+    <div class="exo-header">
+      <span class="exo-name">Crunch sur ballon</span>
+      <span class="exo-preview">3 × 15</span>
+      <span class="exo-chevron">▾</span>
+    </div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 15</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 0 · 2 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">45s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card abdos-card" onclick="toggleExo(this)">
+    <div class="exo-header">
+      <span class="exo-name">Gainage latéral</span>
+      <span class="exo-preview">3 × 45s / côté</span>
+      <span class="exo-chevron">▾</span>
+    </div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries</div><div class="chip-value">3 × 45s / côté</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">45s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card abdos-card" onclick="toggleExo(this)">
+    <div class="exo-header">
+      <span class="exo-name">Russian Twist</span>
+      <span class="exo-preview">3 × 15 / côté</span>
+      <span class="exo-chevron">▾</span>
+    </div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 15 / côté</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 0 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">45s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- MARDI -->
+<div id="session-mardi" class="session-view">
+  <button class="back-btn" onclick="goHome()">← Retour</button>
+  <div class="session-header">
+    <div class="day-name">Mardi</div>
+    <h2>Upper A</h2>
+    <div class="sub">Dos · Biceps · Épaules arrière</div>
+  </div>
+
+  <div class="mobilite-block">
+    <div class="mob-title">🌿 Mobilité — 5 à 10 min</div>
+    <p>Rotations d'épaules &nbsp;·&nbsp; Dislocations barre &nbsp;·&nbsp; Ouverture thoracique foam roller</p>
+  </div>
+
+  <div class="section-label">Exercices principaux</div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Tirage vertical (prise neutre)</span><span class="exo-preview">4 × 10</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">4 × 10</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">8</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 1 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">90s</div></div>
+      <div class="detail-notes">Échauffement : 15 kg × 10</div>
+    </div></div>
+  </div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Traction australienne</span><span class="exo-preview">4 × 10</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">4 × 10</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 1 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">75s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Tirage horizontal poulie basse</span><span class="exo-preview">3 × 12</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 12</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 1 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">75s</div></div>
+      <div class="detail-notes">Prise serrée</div>
+    </div></div>
+  </div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Rowing haltère unilatéral</span><span class="exo-preview">3 × 10 / côté</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 10 / côté</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 1 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">75s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Face Pull</span><span class="exo-preview">3 × 15</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 15</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 0 · 2 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">60s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Curl incliné haltères</span><span class="exo-preview">3 × 12</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 12</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 0 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">60s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Curl pupitre</span><span class="exo-preview">3 × 12</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 12</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 0 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">60s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Curl marteau</span><span class="exo-preview">3 × 12</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 12</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 0 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">60s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="section-label abdos">Abdos · Focus relevés et gainage dynamique</div>
+
+  <div class="exo-card abdos-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Crunch câble</span><span class="exo-preview">3 × 15</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 15</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 0 · 2 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">45s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card abdos-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Relevé de jambes suspendu</span><span class="exo-preview">3 × 12</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 12</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 0 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">45s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card abdos-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Russian Twist</span><span class="exo-preview">3 × 15 / côté</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 15 / côté</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 0 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">45s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- MERCREDI -->
+<div id="session-mercredi" class="session-view">
+  <button class="back-btn" onclick="goHome()">← Retour</button>
+  <div class="session-header">
+    <div class="day-name">Mercredi</div>
+    <h2>Lower B</h2>
+    <div class="sub">Ischios · Fessiers</div>
+  </div>
+
+  <div class="mobilite-block">
+    <div class="mob-title">🌿 Mobilité — 5 à 10 min</div>
+    <p>Fentes basses &nbsp;·&nbsp; Étirement piriforme &nbsp;·&nbsp; Activation fessiers bande élastique</p>
+  </div>
+
+  <div class="section-label">Exercices principaux</div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Soulevé de terre classique</span><span class="exo-preview">4 × 6</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">4 × 6</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">8</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 1 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">90s</div></div>
+      <div class="detail-notes">Échauffement : 30 kg × 10</div>
+    </div></div>
+  </div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">RDL</span><span class="exo-preview">4 × 10</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">4 × 10</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">8</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">3 · 1 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">90s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Hip Thrust barre</span><span class="exo-preview">4 × 10</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">4 × 10</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 1 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">90s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Leg Curl machine</span><span class="exo-preview">3 × 12</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 12</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 1 · 2 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">60s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Adducteurs machine</span><span class="exo-preview">3 × 15</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 15</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 0 · 2 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">60s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Abducteurs machine</span><span class="exo-preview">3 × 15</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 15</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 0 · 2 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">60s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Anti-périostite (tibialis raises)</span><span class="exo-preview">3 × 20</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 20</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">—</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 1 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">45s</div></div>
+      <div class="detail-notes">Protection cheville 🦶</div>
+    </div></div>
+  </div>
+
+  <div class="section-label abdos">Abdos · Focus gainage et obliques</div>
+
+  <div class="exo-card abdos-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Gainage planche</span><span class="exo-preview">3 × 60s</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries</div><div class="chip-value">3 × 60s</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">45s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card abdos-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Crunch sur ballon</span><span class="exo-preview">3 × 15</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 15</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 0 · 2 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">45s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card abdos-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Russian Twist</span><span class="exo-preview">3 × 15 / côté</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 15 / côté</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 0 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">45s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- VENDREDI -->
+<div id="session-vendredi" class="session-view">
+  <button class="back-btn" onclick="goHome()">← Retour</button>
+  <div class="session-header">
+    <div class="day-name">Vendredi</div>
+    <h2>Upper B</h2>
+    <div class="sub">Pecs · Épaules · Triceps</div>
+  </div>
+
+  <div class="mobilite-block">
+    <div class="mob-title">🌿 Mobilité — 5 à 10 min</div>
+    <p>Rotations d'épaules &nbsp;·&nbsp; Étirement pectoraux au cadre &nbsp;·&nbsp; Mobilité poignets</p>
+  </div>
+
+  <div class="section-label">Exercices principaux</div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Développé couché barre</span><span class="exo-preview">4 × 8</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">4 × 8</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">8</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 1 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">90s</div></div>
+      <div class="detail-notes">Échauffement : barre × 10</div>
+    </div></div>
+  </div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Développé militaire haltères</span><span class="exo-preview">3 × 10</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 10</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">8</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 1 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">90s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Écarté machine</span><span class="exo-preview">3 × 12</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 12</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 0 · 2 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">60s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Élévations latérales unilatérales</span><span class="exo-preview">3 × 15</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 15</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 0 · 2 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">60s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Dips</span><span class="exo-preview">3 × 10</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 10</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 1 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">75s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Extension triceps corde poulie</span><span class="exo-preview">3 × 12</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 12</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 1 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">60s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="section-label abdos">Abdos · Focus crunch et gainage latéral</div>
+
+  <div class="exo-card abdos-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Crunch câble</span><span class="exo-preview">3 × 15</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 15</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 0 · 2 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">45s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card abdos-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Gainage latéral</span><span class="exo-preview">3 × 45s / côté</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries</div><div class="chip-value">3 × 45s / côté</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">45s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+
+  <div class="exo-card abdos-card" onclick="toggleExo(this)">
+    <div class="exo-header"><span class="exo-name">Russian Twist</span><span class="exo-preview">3 × 15 / côté</span><span class="exo-chevron">▾</span></div>
+    <div class="exo-detail"><div class="exo-detail-inner">
+      <div class="detail-chip"><div class="chip-label">Séries × Reps</div><div class="chip-value">3 × 15 / côté</div></div>
+      <div class="detail-chip"><div class="chip-label">RPE</div><div class="chip-value">7</div></div>
+      <div class="detail-chip"><div class="chip-label">Tempo</div><div class="chip-value">2 · 0 · 1 · 0</div></div>
+      <div class="detail-chip"><div class="chip-label">Repos</div><div class="chip-value">45s</div></div>
+      <div class="detail-notes"></div>
+    </div></div>
+  </div>
+</div>
+
+<script>
+  function openSession(day) {
+    document.getElementById('home').style.display = 'none';
+    const session = document.getElementById('session-' + day);
+    session.style.display = 'block';
+    // animate cards
+    session.querySelectorAll('.exo-card').forEach((card, i) => {
+      card.style.animationDelay = (i * 0.04) + 's';
+    });
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  function goHome() {
+    document.querySelectorAll('.session-view').forEach(s => s.style.display = 'none');
+    document.getElementById('home').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  function toggleExo(card) {
+    const detail = card.querySelector('.exo-detail');
+    const isOpen = card.classList.contains('open');
+
+    // close all others in same session
+    const parent = card.closest('.session-view') || card.parentElement;
+    parent.querySelectorAll('.exo-card.open').forEach(c => {
+      if (c !== card) {
+        c.classList.remove('open');
+        c.querySelector('.exo-detail').style.maxHeight = '0';
+      }
+    });
+
+    if (isOpen) {
+      card.classList.remove('open');
+      detail.style.maxHeight = '0';
+    } else {
+      card.classList.add('open');
+      detail.style.maxHeight = detail.scrollHeight + 'px';
+    }
+  }
+</script>
+</body>
+</html>
